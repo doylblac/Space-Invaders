@@ -16,7 +16,7 @@ namespace Space_Invaders
         Boolean leftArrowDown, rightArrowDown, spaceKeyDown;
         bool invadersRight = false;
         bool invadersLeft = true;
-
+        bool newLevel = false;
         bool shotLaunched = false;
 
         //Intialize variables for player
@@ -24,6 +24,8 @@ namespace Space_Invaders
         int xHero = 250;
         int yHero = 400;
         int score = 0;
+        int killCounter = 0;
+        int levelCounter = 0;
 
         //Intialize variables for shot
         int playerShotSpeed = 5;
@@ -103,6 +105,8 @@ namespace Space_Invaders
 
             updateScore();
 
+            levelTracker();
+
             Refresh();
         }
 
@@ -111,7 +115,6 @@ namespace Space_Invaders
             Pen drawPen = new Pen(Color.Green, 2);
             Font drawFont = new Font("Arial", 16, FontStyle.Bold);
             SolidBrush drawBrush = new SolidBrush(Color.Red);
-
 
             Rectangle defender = new Rectangle(xHero, yHero, 10, 10);
 
@@ -128,6 +131,10 @@ namespace Space_Invaders
             e.Graphics.FillRectangle(Brushes.White, invader1);
 
             e.Graphics.DrawString(score + "", drawFont, drawBrush, 400, 40);
+
+            e.Graphics.DrawString(killCounter + "", drawFont, drawBrush, 300, 40);
+
+            e.Graphics.DrawString(levelCounter + "", drawFont, drawBrush, 200, 40);
 
 
         }
@@ -172,10 +179,15 @@ namespace Space_Invaders
 
         public void moveShot()
         {
-            yShot = yShot - playerShotSpeed;
-
-            if (yShot < 0)
+            if (shotLaunched)
             {
+                yShot = yShot - playerShotSpeed;
+            }
+
+            if (yShot == 0)
+            {
+                yShot = 1000;
+
                 shotLaunched = false;
             }
         }
@@ -187,13 +199,16 @@ namespace Space_Invaders
 
         public void moveInvaders()
         {
-            if (invadersRight)
+            if (levelCounter >= 0)
             {
-                invaderX = invaderX + invaderSpeed;
-            }
-            else if (invadersLeft)
-            {
-                invaderX = invaderX - invaderSpeed;
+                if (invadersRight)
+                {
+                    invaderX = invaderX + invaderSpeed;
+                }
+                else if (invadersLeft)
+                {
+                    invaderX = invaderX - invaderSpeed;
+                }
             }
         }
 
@@ -205,7 +220,7 @@ namespace Space_Invaders
 
                 invadersLeft = true;
 
-                invaderY += 30;
+                invaderY += 50;
             }
 
             else if (invaderX <= 0)
@@ -214,7 +229,7 @@ namespace Space_Invaders
 
                 invadersLeft = false;
 
-                invaderY += 30;
+                invaderY += 50;
             }
 
         }
@@ -223,13 +238,80 @@ namespace Space_Invaders
         {
             Rectangle playerShot = new Rectangle(xShot, yShot, 2, 8);
 
-            Rectangle invader1 = new Rectangle(invaderX, invaderY, 10, 10);
+            Rectangle invader1 = new Rectangle(invaderX, invaderY, 30, 30);
 
             if (playerShot.IntersectsWith(invader1))
             {
+                killCounter++;
+
+                shotLaunched = false;
+
+                yShot = 1000;
+
                 score += 100;
             }
-        } 
+        }
+
+        public void levelTracker()
+        {
+            switch (killCounter)
+            {
+                case 20:
+                    if (killCounter == 20 && newLevel == false)
+                    {
+                        newLevel = true;
+                        levelCounter++;
+                    }
+                    break;
+                case 40:
+                    levelCounter++;
+                    break;
+                case 60:
+                    levelCounter++;
+                    break;
+                case 80:
+                    levelCounter++;
+                    break;
+                case 100:
+                    levelCounter++;
+                    break;
+                case 120:
+                    levelCounter++;
+                    break;
+                case 140:
+                    levelCounter++;
+                    break;
+                case 160:
+                    levelCounter++;
+                    break;
+            }
+
+            switch (levelCounter)
+            {
+                case 1:
+                    invaderX = this.Width / 2;
+                    invaderY = 150;
+                    break;
+                case 2:
+                    invaderX = this.Width / 2;
+                    invaderY = 200;
+                    break;
+                case 3:
+                    invaderX = this.Width / 2;
+                    invaderY = 250;
+                    break;
+                case 4:
+                    invaderX = this.Width / 2;
+                    invaderY = 300;
+                    break;
+                case 5:
+                    invaderX = this.Width / 2;
+                    invaderY = 350;
+                    break;
+
+            }
+        }
+
     }
 
 }
