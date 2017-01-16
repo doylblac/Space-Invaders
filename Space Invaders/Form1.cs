@@ -33,7 +33,9 @@ namespace Space_Invaders
         //Intialize variables for invaders
         int invaderX = 250;
         int invaderY = 100;
-        int invaderSpeed = 2;
+        int invaderSpeed = 1;
+
+
 
         public Form1()
         {
@@ -46,7 +48,7 @@ namespace Space_Invaders
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.Size = new Size(500, 500);         
+            this.Size = new Size(500, 500);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -89,13 +91,17 @@ namespace Space_Invaders
         {
             movePlayer();
 
+            moveShot();
+
             checkPlayerShot();
 
-            moveShot();
+            invaderDown();
+
+            moveInvaders();
 
             updateBarriers();
 
-            moveInvaders();
+            updateScore();
 
             Refresh();
         }
@@ -103,20 +109,25 @@ namespace Space_Invaders
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             Pen drawPen = new Pen(Color.Green, 2);
+            Font drawFont = new Font("Arial", 16, FontStyle.Bold);
+            SolidBrush drawBrush = new SolidBrush(Color.Red);
+
 
             Rectangle defender = new Rectangle(xHero, yHero, 10, 10);
 
             Rectangle playerShot = new Rectangle(xShot, yShot, 2, 8);
 
-            Rectangle invader1 = new Rectangle(invaderX, invaderY, 10, 10);
+            Rectangle invader1 = new Rectangle(invaderX, invaderY, 30, 30);
 
             e.Graphics.DrawLine(drawPen, 2, this.Height - 50, this.Width - 2, this.Height - 50);
-            
+
             e.Graphics.FillRectangle(Brushes.White, defender);
 
             e.Graphics.FillRectangle(Brushes.White, playerShot);
 
             e.Graphics.FillRectangle(Brushes.White, invader1);
+
+            e.Graphics.DrawString(score + "", drawFont, drawBrush, 400, 40);
 
 
         }
@@ -133,7 +144,7 @@ namespace Space_Invaders
                     xHero = 0;
                 }
             }
- 
+
             if (rightArrowDown == true)
             {
                 if (xHero < this.Width - 10)
@@ -176,31 +187,54 @@ namespace Space_Invaders
 
         public void moveInvaders()
         {
-            if (invadersRight == true && invadersLeft == false)
+            if (invadersRight)
             {
                 invaderX = invaderX + invaderSpeed;
             }
-            else if (invadersLeft == true && invadersRight == false)
+            else if (invadersLeft)
             {
                 invaderX = invaderX - invaderSpeed;
             }
-            else if (invaderX >= this.Width - 10)
+        }
+
+        public void invaderDown()
+        {
+            if (invaderX >= this.Width - 10)
             {
                 invadersRight = false;
+
                 invadersLeft = true;
-                invaderX = this.Width - 10;
-                invaderY -= 10;
-            }
-            else if (invaderX <= 0)
-            {
-            //    invadersRight = true;
-          //      invadersLeft = false;
-                invaderX = 0;
+
+                invaderY += 30;
             }
 
+            else if (invaderX <= 0)
+            {
+                invadersRight = true;
+
+                invadersLeft = false;
+
+                invaderY += 30;
+            }
 
         }
 
+        public void updateScore()
+        {
+            Rectangle playerShot = new Rectangle(xShot, yShot, 2, 8);
+
+            Rectangle invader1 = new Rectangle(invaderX, invaderY, 10, 10);
+
+            if (playerShot.IntersectsWith(invader1))
+            {
+                score += 100;
+            }
+        } 
     }
+
 }
+
+
+    
+
 
