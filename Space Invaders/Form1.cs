@@ -18,17 +18,24 @@ namespace Space_Invaders
         bool invadersLeft = true;
         bool newLevel = false;
         bool shotLaunched = false;
+        bool restart = false;
+        bool ufoLaunched = false;
+        bool ufoHit = false;
 
         //Intialize variables for player
         int playerSpeed = 3;
         int xHero = 250;
         int yHero = 400;
+        int heroWidth = 10;
+        int heroHeight = 10;
         int score = 0;
         int killCounter = 0;
         int levelCounter = 0;
 
         //Intialize variables for shot
         int playerShotSpeed = 5;
+        int shotWidth = 2;
+        int shotHeight = 10;
         int xShot;
         int yShot;
 
@@ -36,7 +43,20 @@ namespace Space_Invaders
         int invaderX = 250;
         int invaderY = 100;
         int invaderSpeed = 1;
+        int invaderWidth = 30;
+        int invaderHeight = 30;
+        int invaderDecrease = 30;
+        int invaderStart = 100;
+        int ufoX = 510;
+        int ufoY = 50;
+        int ufoWidth = 15;
+        int ufoHeight = 15;
+        int ufoSpeed = 1;
+        int preUfoScore;
+        int ufoScore = 0;
+        int ufoChance;
 
+        Random randGen = new Random();
 
 
         public Form1()
@@ -101,11 +121,17 @@ namespace Space_Invaders
 
             moveInvaders();
 
-            updateBarriers();
+            drawBarriers();
 
             updateScore();
 
             levelTracker();
+
+            invaderRestart();
+
+            ufoSpawn();
+
+            ufoMovement();
 
             Refresh();
         }
@@ -116,11 +142,13 @@ namespace Space_Invaders
             Font drawFont = new Font("Arial", 16, FontStyle.Bold);
             SolidBrush drawBrush = new SolidBrush(Color.Red);
 
-            Rectangle defender = new Rectangle(xHero, yHero, 10, 10);
+            Rectangle defender = new Rectangle(xHero, yHero, heroWidth, heroHeight);
 
-            Rectangle playerShot = new Rectangle(xShot, yShot, 2, 8);
+            Rectangle playerShot = new Rectangle(xShot, yShot, shotWidth, shotHeight);
 
-            Rectangle invader1 = new Rectangle(invaderX, invaderY, 30, 30);
+            Rectangle invader1 = new Rectangle(invaderX, invaderY, invaderWidth, invaderHeight);
+
+            Rectangle ufo = new Rectangle(ufoX, ufoY, ufoWidth, ufoHeight);
 
             e.Graphics.DrawLine(drawPen, 2, this.Height - 50, this.Width - 2, this.Height - 50);
 
@@ -130,11 +158,23 @@ namespace Space_Invaders
 
             e.Graphics.FillRectangle(Brushes.White, invader1);
 
+            e.Graphics.FillRectangle(Brushes.White, ufo);
+
+
             e.Graphics.DrawString(score + "", drawFont, drawBrush, 400, 40);
 
             e.Graphics.DrawString(killCounter + "", drawFont, drawBrush, 300, 40);
 
             e.Graphics.DrawString(levelCounter + "", drawFont, drawBrush, 200, 40);
+
+            if (ufoHit)
+            {
+                ufoLaunched = false;
+
+                ufoX = 510;
+
+                e.Graphics.DrawString(levelCounter + "", drawFont, drawBrush, ufoX, ufoY);
+            }
 
 
         }
@@ -192,24 +232,22 @@ namespace Space_Invaders
             }
         }
 
-        public void updateBarriers()
+        public void drawBarriers()
         {
 
         }
 
         public void moveInvaders()
         {
-            if (levelCounter >= 0)
+            if (invadersRight == true && restart == false)
             {
-                if (invadersRight)
-                {
-                    invaderX = invaderX + invaderSpeed;
-                }
-                else if (invadersLeft)
-                {
-                    invaderX = invaderX - invaderSpeed;
-                }
+                invaderX = invaderX + invaderSpeed;
             }
+            else if (invadersLeft && restart == false)
+            {
+                invaderX = invaderX - invaderSpeed;
+            }
+
         }
 
         public void invaderDown()
@@ -246,6 +284,8 @@ namespace Space_Invaders
 
                 shotLaunched = false;
 
+                newLevel = false;
+
                 yShot = 1000;
 
                 score += 100;
@@ -254,67 +294,239 @@ namespace Space_Invaders
 
         public void levelTracker()
         {
-            switch (killCounter)
+            if (killCounter == 20 && newLevel == false)
             {
-                case 20:
-                    if (killCounter == 20 && newLevel == false)
-                    {
-                        newLevel = true;
-                        levelCounter++;
-                    }
-                    break;
-                case 40:
-                    levelCounter++;
-                    break;
-                case 60:
-                    levelCounter++;
-                    break;
-                case 80:
-                    levelCounter++;
-                    break;
-                case 100:
-                    levelCounter++;
-                    break;
-                case 120:
-                    levelCounter++;
-                    break;
-                case 140:
-                    levelCounter++;
-                    break;
-                case 160:
-                    levelCounter++;
-                    break;
+                score += 1000;
+
+                levelCounter++;
+
+                newLevel = true;
+
+                restart = true;
             }
 
-            switch (levelCounter)
+            else if (killCounter == 40 && newLevel == false)
             {
-                case 1:
-                    invaderX = this.Width / 2;
-                    invaderY = 150;
-                    break;
-                case 2:
-                    invaderX = this.Width / 2;
-                    invaderY = 200;
-                    break;
-                case 3:
-                    invaderX = this.Width / 2;
-                    invaderY = 250;
-                    break;
-                case 4:
-                    invaderX = this.Width / 2;
-                    invaderY = 300;
-                    break;
-                case 5:
-                    invaderX = this.Width / 2;
-                    invaderY = 350;
-                    break;
+                score += 1000;
 
+                levelCounter++;
+
+                newLevel = true;
+
+                restart = true;
+            }
+            else if (killCounter == 60 && newLevel == false)
+            {
+                score += 1000;
+
+                levelCounter++;
+
+                newLevel = true;
+
+                restart = true;
+            }
+
+            else if (killCounter == 80 && newLevel == false)
+            {
+                score += 1000;
+
+                levelCounter++;
+
+                newLevel = true;
+
+                restart = true;
+            }
+            else if (killCounter == 100 && newLevel == false)
+            {
+                score += 1000;
+
+                levelCounter++;
+
+                newLevel = true;
+
+                restart = true;
+            }
+            else if (killCounter == 120 && newLevel == false)
+            {
+                score += 1000;
+
+                levelCounter++;
+
+                newLevel = true;
+
+                restart = true;
+            }
+            else if (killCounter == 140 && newLevel == false)
+            {
+                score += 1000;
+
+                levelCounter++;
+
+                newLevel = true;
+
+                restart = true;
+            }
+            else if (killCounter == 160 && newLevel == false)
+            {
+                score += 1000;
+
+                levelCounter++;
+
+                newLevel = true;
+
+                restart = true;
+            }
+
+        }
+        
+        public void invaderRestart()
+        {
+            if (levelCounter == 1 && restart == true)
+            {
+                invaderX = this.Width / 2;
+                invaderY = invaderStart + levelCounter * invaderDecrease;
+
+                restart = false;
+            }
+
+            else if (levelCounter == 2 && restart == true)
+            {
+                invaderX = this.Width / 2;
+                invaderY = invaderStart + levelCounter * invaderDecrease;
+
+                restart = false;
+            }
+            else if (levelCounter == 3 && restart == true)
+            {
+                invaderX = this.Width / 2;
+                invaderY = invaderStart + levelCounter * invaderDecrease;
+
+                restart = false;
+            }
+            else if (levelCounter == 4 && restart == true)
+            {
+                invaderX = this.Width / 2;
+                invaderY = invaderStart + levelCounter * invaderDecrease;
+
+                restart = false;
+            }
+
+            else if (levelCounter == 5 && restart == true)
+            {
+                invaderX = this.Width / 2;
+                invaderY = invaderStart + levelCounter * invaderDecrease;
+
+                restart = false;
+            }
+
+            else if (levelCounter == 6 && restart == true)
+            {
+                invaderX = this.Width / 2;
+                invaderY = invaderStart + levelCounter * invaderDecrease;
+
+                restart = false;
+            }
+
+            else if (levelCounter == 7 && restart == true)
+            {
+                invaderX = this.Width / 2;
+                invaderY = invaderStart + levelCounter * invaderDecrease;
+
+                restart = false;
+            }
+
+            else if (levelCounter == 8 && restart == true)
+            {
+                invaderX = this.Width / 2;
+                invaderY = invaderStart + levelCounter * invaderDecrease;
+
+                restart = false;
+            }
+
+
+        }
+
+        public void ufoSpawn()
+        {
+            preUfoScore = randGen.Next(1, 7);
+
+            if (ufoLaunched == false)
+            {
+                ufoChance = randGen.Next(1, 6);
+            }
+
+            if (preUfoScore == 1)
+            {
+                ufoScore = 50;
+            }
+            else if (preUfoScore == 2)
+            {
+                ufoScore = 100;
+            }
+            else if (preUfoScore == 3)
+            {
+                ufoScore = 150;
+            }
+            else if (preUfoScore == 4)
+            {
+                ufoScore = 200;
+            }
+            else if (preUfoScore == 5)
+            {
+                ufoScore = 250;
+            }
+            else if (preUfoScore == 6)
+            {
+                ufoScore = 300;
+            }
+
+            if (ufoChance == 1)
+            {
+                ufoLaunched = false;
+            }
+           else if (ufoChance == 2)
+            {
+                ufoLaunched = false;
+            }
+           else if (ufoChance == 3)
+            {
+                ufoLaunched = false;
+            }
+           else if (ufoChance == 4)
+            {
+                ufoLaunched = false;
+            }
+           else if (ufoChance == 5)
+            {
+                ufoLaunched = true;
             }
         }
 
+        public void ufoMovement()
+        {
+            Rectangle playerShot = new Rectangle(xShot, yShot, shotWidth, shotHeight);
+
+            Rectangle ufo = new Rectangle(ufoX, ufoY, ufoWidth, ufoHeight);
+
+            if (playerShot.IntersectsWith(ufo))
+            {
+                score = score + ufoScore;
+
+                ufoHit = true;
+            }
+
+            if (ufoLaunched)
+            {
+                ufoX = ufoX - ufoSpeed;
+            }
+
+
+        }
     }
 
 }
+
+
 
 
     
