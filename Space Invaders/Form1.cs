@@ -220,7 +220,7 @@ namespace Space_Invaders
             e.Graphics.FillRectangle(Brushes.Red, ufo);
 
             // Create image.
-            Image newImage = Image.FromFile("hero");
+            Image newImage = Image.FromFile("hero.PNG");
 
             // Create rectangle for displaying image.
             Rectangle heroImage = new Rectangle(xHero, yHero, heroWidth, heroHeight);

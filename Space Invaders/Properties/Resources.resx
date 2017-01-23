@@ -121,19 +121,8 @@
   <data name="exploding_player_alt" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\exploding player alt.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="hero" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAAEIAAAAqCAYAAAAH843fAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAS
-        dAAAEnQB3mYfeAAAAatJREFUaEPt0l1uIjEQRtHwu6Hsf21MOVJFpjg900xogWMinRfTaXw/8RF/l0fY
-        7Xb/tN/vVzkcDouOx+Mqp9NplfP5/CUaHPa/NECl+Eoj9BRfKVw2GaJRfKV40QhJ8aL4Ku7tmEfQAJXi
-        K43QU3yl+F7c1xGPovhK8aIRkuJFIzRxVwc8kuJF8ZVG6ClenjJEUnyleNEISeHytCEaxYviRUMkxctT
-        hkifl2tbjdEovoo7+aJbWzNEUrxohKT4XtzJF93aPUM0CheN0NMITdzJF91CjV+iIZLiRSP0hh+iUfgS
-        jZCGHyIpXDRC72WHyOcVXyl8iUZI8X3Xl92SoqX/H8WLwpcMOURSvChcfjyELv5K7hmj+dVD3PvraKLN
-        wUv05a+kH+KeQaLNwUlfNpK1Y0SrB0h6+Uj6X8bfBolWD5D08pHUIdJ7iOI9RBGtHiDp5SNpDQqv4rnb
-        +J5ePpK+RQOk+Pz64UovH0nt0QhNfHb7cE8vH4mamvcQxXuIWzz8ppePRE0LePhNLx+JmhbwcEY8nBEP
-        Z8TDGfFwRjycEQ9nxMMZ8XAyH5c/BeyttFF7iAsAAAAASUVORK5CYII=
-</value>
+  <data name="hero" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\hero.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="_10_50_point_exploding_sprite" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\10-50 point exploding sprite.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
