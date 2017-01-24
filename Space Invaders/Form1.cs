@@ -7,11 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Media;
 
 namespace Space_Invaders
 {
     public partial class Form1 : Form
-    { 
+    {
         //Intialize boolean variables 
         Boolean leftArrowDown, rightArrowDown, spaceKeyDown;
         bool invadersRight = true;
@@ -20,11 +21,13 @@ namespace Space_Invaders
         bool shotLaunched = false;
         bool restart = false;
         bool ufoLaunched = false;
-        bool ufoHit = false;
         bool newInvaderSpeed = false;
+        bool gameStarted = false;
+        bool invaderShotFired = false;
+        bool shootSoundplayed = false;
 
         //Intialize variables for player
-        int playerSpeed = 3;
+        int playerSpeed = 5;
         int xHero;
         int yHero = 600;
         int heroWidth = 20;
@@ -41,98 +44,68 @@ namespace Space_Invaders
         int yShot;
 
         //Intialize variables for invaders
-        List<int> activeInvaders = new List<int>(new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 });
+        List<int> activeInvaders = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 });
 
         int invaderX11 = 200;
         int invaderY11 = 100;
-
         int invaderX12 = 200;
         int invaderY12 = 140;
-
         int invaderX13 = 200;
         int invaderY13 = 180;
-
         int invaderX14 = 200;
         int invaderY14 = 220;
-
         int invaderX15 = 200;
         int invaderY15 = 260;
-
         int invaderX21 = 250;
         int invaderY21 = 100;
-
         int invaderX22 = 250;
         int invaderY22 = 140;
-
         int invaderX23 = 250;
         int invaderY23 = 180;
-
         int invaderX24 = 250;
         int invaderY24 = 220;
-
         int invaderX25 = 250;
         int invaderY25 = 260;
-
         int invaderX31 = 300;
         int invaderY31 = 100;
-
         int invaderX32 = 300;
         int invaderY32 = 140;
-
         int invaderX33 = 300;
         int invaderY33 = 180;
-
         int invaderX34 = 300;
         int invaderY34 = 220;
-
         int invaderX35 = 300;
         int invaderY35 = 260;
-
         int invaderX41 = 350;
         int invaderY41 = 100;
-
         int invaderX42 = 350;
         int invaderY42 = 140;
-
         int invaderX43 = 350;
         int invaderY43 = 180;
-
         int invaderX44 = 350;
         int invaderY44 = 220;
-
         int invaderX45 = 350;
         int invaderY45 = 260;
-
         int invaderX51 = 400;
         int invaderY51 = 100;
-
         int invaderX52 = 400;
         int invaderY52 = 140;
-
         int invaderX53 = 400;
         int invaderY53 = 180;
-
         int invaderX54 = 400;
         int invaderY54 = 220;
-
         int invaderX55 = 400;
         int invaderY55 = 260;
-
         int invaderX61 = 450;
         int invaderY61 = 100;
-
         int invaderX62 = 450;
         int invaderY62 = 140;
-
         int invaderX63 = 450;
         int invaderY63 = 180;
-
         int invaderX64 = 450;
         int invaderY64 = 220;
-
         int invaderX65 = 450;
         int invaderY65 = 260;
-
         int invaderSpeed = 1;
         int invaderWidth = 25;
         int invaderHeight = 25;
@@ -142,27 +115,25 @@ namespace Space_Invaders
         int invaderShotSpeed = 5;
         int nextInvadershot = 0;
 
+        //Intialize variables for ufo
         int ufoX = 776;
         int ufoY = 50;
         int ufoWidth = 20;
-        int ufoHeight =20;
-        int ufoSpeed = 1;
+        int ufoHeight = 20;
+        int ufoSpeed = 3;
         int preUfoScore;
         int ufoScore = 0;
         int ufoDelay = 0;
-        int counter = 0;
 
         //Intialize variables for barriers
         int barrierWidth = 100;
         int barrierHeight = 10;
-
         int barrier1X = 100;
         int barrier1Y = 550;
         int barrier2Y = 550;
         int barrier2X = 350;
         int barrier3Y = 550;
         int barrier3X = 600;
-
         int barrier1Hit = 0;
         int barrier2Hit = 0;
         int barrier3Hit = 0;
@@ -170,22 +141,84 @@ namespace Space_Invaders
         int shotTime;
         Random randGen = new Random();
 
-
+        //Intialize list for high scores
+        List<int> highScores = new List<int>();
+   
         public Form1()
         {
             InitializeComponent();
-
-            gameEngine.Enabled = true;
-
-            gameEngine.Start();
-
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             this.Size = new Size(766, 706);
 
+            highScores.Add(240);
+            highScores.Add(6310);
+            highScores.Add(5710);
+            highScores.Add(9750);
+            highScores.Add(4540);
+            highScores.Add(50975);
+            highScores.Add(45240);
+            highScores.Add(205);
+            highScores.Add(60);
+            highScores.Add(5870);
+            highScores.Add(6520);
+            highScores.Add(40);
+            highScores.Add(30);
+            highScores.Add(20);
+            highScores.Add(10);
+
             xHero = this.Width / 2;
+        }
+
+        private void playGameButton_Click(object sender, EventArgs e)
+        {
+            Graphics g = this.CreateGraphics();
+            g.Clear(Color.Black);
+
+            playGameButton.Visible = false;
+
+            highScoreButton.Visible = false;
+
+            gameEngine.Enabled = true;
+
+            gameEngine.Start();
+
+            KeyPreview = true;
+
+            DoubleBuffered = true;
+
+            this.BackgroundImage = null;
+
+            gameStarted = true;
+            Refresh();
+        }
+
+        private void highScoreButton_Click(object sender, EventArgs e)
+        {
+            this.BackgroundImage = null;
+
+            Graphics g = this.CreateGraphics();
+            Font bigFont = new Font("Consolas", 20, FontStyle.Bold); //create a font for graphics
+            Font smallFont = new Font("Consolas", 13, FontStyle.Bold); //create a font for graphics
+            SolidBrush greenBrush = new SolidBrush(Color.LimeGreen); //create a brush for graphics
+            SolidBrush whiteBrush = new SolidBrush(Color.White); //create a brush for graphics
+
+            highScoreButton.Visible = false;
+
+            highScores.Add(score);
+            highScores.Sort();
+            highScores.Reverse();
+
+            int y = 80;
+
+            for (int i = 0; i < 10; i++)
+            {
+                g.DrawString("HIGH SCORES", bigFont, greenBrush, 150, 50);
+                g.DrawString("" + highScores[i], smallFont, whiteBrush, 150, y);
+                y = y + 20;
+            }
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -265,161 +298,168 @@ namespace Space_Invaders
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            Pen drawPen = new Pen(Color.Green, 2);
-            Font drawFont = new Font("Arial", 16, FontStyle.Bold);
-            SolidBrush drawBrush = new SolidBrush(Color.Red);
+            if (gameStarted)
+            {
+                Pen drawPen = new Pen(Color.Green, 2);
+                Font drawFont = new Font("Arial", 16, FontStyle.Bold);
+                SolidBrush drawBrush = new SolidBrush(Color.Red);
 
-            Rectangle barrier1 = new Rectangle(barrier1X, barrier1Y, barrierWidth, barrierHeight);
+                Rectangle barrier1 = new Rectangle(barrier1X, barrier1Y, barrierWidth, barrierHeight);
 
-            Rectangle barrier2 = new Rectangle(barrier2X, barrier2Y, barrierWidth, barrierHeight);
+                Rectangle barrier2 = new Rectangle(barrier2X, barrier2Y, barrierWidth, barrierHeight);
 
-            Rectangle barrier3 = new Rectangle(barrier3X, barrier3Y, barrierWidth, barrierHeight);
+                Rectangle barrier3 = new Rectangle(barrier3X, barrier3Y, barrierWidth, barrierHeight);
 
-            Rectangle defender = new Rectangle(xHero, yHero, heroWidth, heroHeight);
+                Rectangle defender = new Rectangle(xHero, yHero, heroWidth, heroHeight);
 
-            Rectangle playerShot = new Rectangle(xShot, yShot, shotWidth, shotHeight);
+                Rectangle playerShot = new Rectangle(xShot, yShot, shotWidth, shotHeight);
 
-            Rectangle invader11 = new Rectangle(invaderX11, invaderY11, invaderWidth, invaderHeight);
+                Rectangle invaderShot = new Rectangle(invaderShotX, invaderShotY, shotWidth, shotHeight);
 
-            Rectangle invader12 = new Rectangle(invaderX12, invaderY12, invaderWidth, invaderHeight);
+                Rectangle invader11 = new Rectangle(invaderX11, invaderY11, invaderWidth, invaderHeight);
 
-            Rectangle invader13 = new Rectangle(invaderX13, invaderY13, invaderWidth, invaderHeight);
+                Rectangle invader12 = new Rectangle(invaderX12, invaderY12, invaderWidth, invaderHeight);
 
-            Rectangle invader14 = new Rectangle(invaderX14, invaderY14, invaderWidth, invaderHeight);
+                Rectangle invader13 = new Rectangle(invaderX13, invaderY13, invaderWidth, invaderHeight);
 
-            Rectangle invader15 = new Rectangle(invaderX15, invaderY15, invaderWidth, invaderHeight);
+                Rectangle invader14 = new Rectangle(invaderX14, invaderY14, invaderWidth, invaderHeight);
 
-            Rectangle invader21 = new Rectangle(invaderX21, invaderY21, invaderWidth, invaderHeight);
+                Rectangle invader15 = new Rectangle(invaderX15, invaderY15, invaderWidth, invaderHeight);
 
-            Rectangle invader22 = new Rectangle(invaderX22, invaderY22, invaderWidth, invaderHeight);
+                Rectangle invader21 = new Rectangle(invaderX21, invaderY21, invaderWidth, invaderHeight);
 
-            Rectangle invader23 = new Rectangle(invaderX23, invaderY23, invaderWidth, invaderHeight);
+                Rectangle invader22 = new Rectangle(invaderX22, invaderY22, invaderWidth, invaderHeight);
 
-            Rectangle invader24 = new Rectangle(invaderX24, invaderY24, invaderWidth, invaderHeight);
+                Rectangle invader23 = new Rectangle(invaderX23, invaderY23, invaderWidth, invaderHeight);
 
-            Rectangle invader25 = new Rectangle(invaderX25, invaderY25, invaderWidth, invaderHeight);
+                Rectangle invader24 = new Rectangle(invaderX24, invaderY24, invaderWidth, invaderHeight);
 
-            Rectangle invader31 = new Rectangle(invaderX31, invaderY31, invaderWidth, invaderHeight);
+                Rectangle invader25 = new Rectangle(invaderX25, invaderY25, invaderWidth, invaderHeight);
 
-            Rectangle invader32 = new Rectangle(invaderX32, invaderY32, invaderWidth, invaderHeight);
+                Rectangle invader31 = new Rectangle(invaderX31, invaderY31, invaderWidth, invaderHeight);
 
-            Rectangle invader33 = new Rectangle(invaderX33, invaderY33, invaderWidth, invaderHeight);
+                Rectangle invader32 = new Rectangle(invaderX32, invaderY32, invaderWidth, invaderHeight);
 
-            Rectangle invader34 = new Rectangle(invaderX34, invaderY34, invaderWidth, invaderHeight);
+                Rectangle invader33 = new Rectangle(invaderX33, invaderY33, invaderWidth, invaderHeight);
 
-            Rectangle invader35 = new Rectangle(invaderX35, invaderY35, invaderWidth, invaderHeight);
+                Rectangle invader34 = new Rectangle(invaderX34, invaderY34, invaderWidth, invaderHeight);
 
-            Rectangle invader41 = new Rectangle(invaderX41, invaderY41, invaderWidth, invaderHeight);
+                Rectangle invader35 = new Rectangle(invaderX35, invaderY35, invaderWidth, invaderHeight);
 
-            Rectangle invader42 = new Rectangle(invaderX42, invaderY42, invaderWidth, invaderHeight);
+                Rectangle invader41 = new Rectangle(invaderX41, invaderY41, invaderWidth, invaderHeight);
 
-            Rectangle invader43 = new Rectangle(invaderX43, invaderY43, invaderWidth, invaderHeight);
+                Rectangle invader42 = new Rectangle(invaderX42, invaderY42, invaderWidth, invaderHeight);
 
-            Rectangle invader44 = new Rectangle(invaderX44, invaderY44, invaderWidth, invaderHeight);
+                Rectangle invader43 = new Rectangle(invaderX43, invaderY43, invaderWidth, invaderHeight);
 
-            Rectangle invader45 = new Rectangle(invaderX45, invaderY45, invaderWidth, invaderHeight);
+                Rectangle invader44 = new Rectangle(invaderX44, invaderY44, invaderWidth, invaderHeight);
 
-            Rectangle invader51 = new Rectangle(invaderX51, invaderY51, invaderWidth, invaderHeight);
+                Rectangle invader45 = new Rectangle(invaderX45, invaderY45, invaderWidth, invaderHeight);
 
-            Rectangle invader52 = new Rectangle(invaderX52, invaderY52, invaderWidth, invaderHeight);
+                Rectangle invader51 = new Rectangle(invaderX51, invaderY51, invaderWidth, invaderHeight);
 
-            Rectangle invader53 = new Rectangle(invaderX53, invaderY53, invaderWidth, invaderHeight);
+                Rectangle invader52 = new Rectangle(invaderX52, invaderY52, invaderWidth, invaderHeight);
 
-            Rectangle invader54 = new Rectangle(invaderX54, invaderY54, invaderWidth, invaderHeight);
+                Rectangle invader53 = new Rectangle(invaderX53, invaderY53, invaderWidth, invaderHeight);
 
-            Rectangle invader55 = new Rectangle(invaderX55, invaderY55, invaderWidth, invaderHeight);
+                Rectangle invader54 = new Rectangle(invaderX54, invaderY54, invaderWidth, invaderHeight);
 
-            Rectangle invader61 = new Rectangle(invaderX61, invaderY61, invaderWidth, invaderHeight);
+                Rectangle invader55 = new Rectangle(invaderX55, invaderY55, invaderWidth, invaderHeight);
 
-            Rectangle invader62 = new Rectangle(invaderX62, invaderY62, invaderWidth, invaderHeight);
+                Rectangle invader61 = new Rectangle(invaderX61, invaderY61, invaderWidth, invaderHeight);
 
-            Rectangle invader63 = new Rectangle(invaderX63, invaderY63, invaderWidth, invaderHeight);
+                Rectangle invader62 = new Rectangle(invaderX62, invaderY62, invaderWidth, invaderHeight);
 
-            Rectangle invader64 = new Rectangle(invaderX64, invaderY64, invaderWidth, invaderHeight);
+                Rectangle invader63 = new Rectangle(invaderX63, invaderY63, invaderWidth, invaderHeight);
 
-            Rectangle invader65 = new Rectangle(invaderX65, invaderY65, invaderWidth, invaderHeight);
+                Rectangle invader64 = new Rectangle(invaderX64, invaderY64, invaderWidth, invaderHeight);
 
-            Rectangle ufo = new Rectangle(ufoX, ufoY, ufoWidth, ufoHeight);
+                Rectangle invader65 = new Rectangle(invaderX65, invaderY65, invaderWidth, invaderHeight);
 
-            e.Graphics.DrawLine(drawPen, 2, this.Height - 50, this.Width - 2, this.Height - 50);
+                Rectangle ufo = new Rectangle(ufoX, ufoY, ufoWidth, ufoHeight);
 
-            e.Graphics.FillRectangle(Brushes.Green, barrier1);
+                e.Graphics.DrawLine(drawPen, 2, this.Height - 50, this.Width - 2, this.Height - 50);
 
-            e.Graphics.FillRectangle(Brushes.Green, barrier2);
+                e.Graphics.FillRectangle(Brushes.Green, barrier1);
 
-            e.Graphics.FillRectangle(Brushes.Green, barrier3);
+                e.Graphics.FillRectangle(Brushes.Green, barrier2);
 
-            e.Graphics.FillRectangle(Brushes.White, defender);
+                e.Graphics.FillRectangle(Brushes.Green, barrier3);
 
-            e.Graphics.FillRectangle(Brushes.White, playerShot);
+                e.Graphics.FillRectangle(Brushes.Green, defender);
 
-            e.Graphics.FillRectangle(Brushes.White, invader11);
+                e.Graphics.FillRectangle(Brushes.White, playerShot);
 
-            e.Graphics.FillRectangle(Brushes.White, invader12);
+                e.Graphics.FillRectangle(Brushes.White, invaderShot);
 
-            e.Graphics.FillRectangle(Brushes.White, invader13);
+                e.Graphics.FillRectangle(Brushes.Green, invader11);
 
-            e.Graphics.FillRectangle(Brushes.White, invader14);
+                e.Graphics.FillRectangle(Brushes.Blue, invader12);
 
-            e.Graphics.FillRectangle(Brushes.White, invader15);
+                e.Graphics.FillRectangle(Brushes.Blue, invader13);
 
-            e.Graphics.FillRectangle(Brushes.White, invader21);
+                e.Graphics.FillRectangle(Brushes.White, invader14);
 
-            e.Graphics.FillRectangle(Brushes.White, invader22);
+                e.Graphics.FillRectangle(Brushes.White, invader15);
 
-            e.Graphics.FillRectangle(Brushes.White, invader23);
+                e.Graphics.FillRectangle(Brushes.Green, invader21);
 
-            e.Graphics.FillRectangle(Brushes.White, invader24);
+                e.Graphics.FillRectangle(Brushes.Blue, invader22);
 
-            e.Graphics.FillRectangle(Brushes.White, invader25);
+                e.Graphics.FillRectangle(Brushes.Blue, invader23);
 
-            e.Graphics.FillRectangle(Brushes.White, invader31);
+                e.Graphics.FillRectangle(Brushes.White, invader24);
 
-            e.Graphics.FillRectangle(Brushes.White, invader32);
+                e.Graphics.FillRectangle(Brushes.White, invader25);
 
-            e.Graphics.FillRectangle(Brushes.White, invader33);
+                e.Graphics.FillRectangle(Brushes.Green, invader31);
 
-            e.Graphics.FillRectangle(Brushes.White, invader34);
+                e.Graphics.FillRectangle(Brushes.Blue, invader32);
 
-            e.Graphics.FillRectangle(Brushes.White, invader35);
+                e.Graphics.FillRectangle(Brushes.Blue, invader33);
 
-            e.Graphics.FillRectangle(Brushes.White, invader41);
+                e.Graphics.FillRectangle(Brushes.White, invader34);
 
-            e.Graphics.FillRectangle(Brushes.White, invader42);
+                e.Graphics.FillRectangle(Brushes.White, invader35);
 
-            e.Graphics.FillRectangle(Brushes.White, invader43);
+                e.Graphics.FillRectangle(Brushes.Green, invader41);
 
-            e.Graphics.FillRectangle(Brushes.White, invader44);
+                e.Graphics.FillRectangle(Brushes.Blue, invader42);
 
-            e.Graphics.FillRectangle(Brushes.White, invader45);
+                e.Graphics.FillRectangle(Brushes.Blue, invader43);
 
-            e.Graphics.FillRectangle(Brushes.White, invader51);
+                e.Graphics.FillRectangle(Brushes.White, invader44);
 
-            e.Graphics.FillRectangle(Brushes.White, invader52);
+                e.Graphics.FillRectangle(Brushes.White, invader45);
 
-            e.Graphics.FillRectangle(Brushes.White, invader53);
+                e.Graphics.FillRectangle(Brushes.Green, invader51);
 
-            e.Graphics.FillRectangle(Brushes.White, invader54);
+                e.Graphics.FillRectangle(Brushes.Blue, invader52);
 
-            e.Graphics.FillRectangle(Brushes.White, invader55);
+                e.Graphics.FillRectangle(Brushes.Blue, invader53);
 
-            e.Graphics.FillRectangle(Brushes.White, invader61);
+                e.Graphics.FillRectangle(Brushes.White, invader54);
 
-            e.Graphics.FillRectangle(Brushes.White, invader62);
+                e.Graphics.FillRectangle(Brushes.White, invader55);
 
-            e.Graphics.FillRectangle(Brushes.White, invader63);
+                e.Graphics.FillRectangle(Brushes.Green, invader61);
 
-            e.Graphics.FillRectangle(Brushes.White, invader64);
+                e.Graphics.FillRectangle(Brushes.Blue, invader62);
 
-            e.Graphics.FillRectangle(Brushes.White, invader65);
+                e.Graphics.FillRectangle(Brushes.Blue, invader63);
 
-            e.Graphics.FillRectangle(Brushes.Red, ufo);
+                e.Graphics.FillRectangle(Brushes.White, invader64);
 
-            e.Graphics.DrawString(score + "", drawFont, drawBrush, 400, 40);
+                e.Graphics.FillRectangle(Brushes.White, invader65);
 
-            e.Graphics.DrawString(killCounter + "", drawFont, drawBrush, 300, 40);
+                e.Graphics.FillRectangle(Brushes.Red, ufo);
 
-            e.Graphics.DrawString(levelCounter + "", drawFont, drawBrush, 200, 40);
+                e.Graphics.DrawString(score + "", drawFont, drawBrush, 400, 40);
+
+                e.Graphics.DrawString(killCounter + "", drawFont, drawBrush, 300, 40);
+
+                e.Graphics.DrawString(levelCounter + "", drawFont, drawBrush, 200, 40);
+            }
         }
 
         public void movePlayer()
@@ -463,9 +503,20 @@ namespace Space_Invaders
 
         public void moveShot()
         {
-            if (shotLaunched)
+            SoundPlayer shoot = new SoundPlayer(Properties.Resources.shoot);
+
+            if (shotLaunched == true)
             {
+                shootSoundplayed = true;
+
                 yShot = yShot - playerShotSpeed;
+            }
+
+            if (shootSoundplayed)
+            {
+                shootSoundplayed = false;
+
+                shoot.Play();
             }
 
             if (yShot == 0)
@@ -511,9 +562,9 @@ namespace Space_Invaders
 
                 barrier3Hit++;
             }
-        
+
         }
-    
+
         public void moveInvaders()
         {
             #region Moves Invaders Right
@@ -620,7 +671,7 @@ namespace Space_Invaders
                 invaderX43 = invaderX43 - invaderSpeed;
 
                 invaderX44 = invaderX44 - invaderSpeed;
-            
+
                 invaderX45 = invaderX45 - invaderSpeed;
 
                 invaderX51 = invaderX51 - invaderSpeed;
@@ -816,8 +867,10 @@ namespace Space_Invaders
                 invaderY11 = 2000;
 
                 invaderX11 = 2000;
-                activeInvaders.Remove(1);
+
                 score += 40;
+
+                activeInvaders.Remove(1);
             }
             else if (playerShot.IntersectsWith(invader12))
             {
@@ -834,6 +887,8 @@ namespace Space_Invaders
                 invaderX12 = 2000;
 
                 score += 20;
+
+                activeInvaders.Remove(2);
             }
             else if (playerShot.IntersectsWith(invader13))
             {
@@ -850,6 +905,8 @@ namespace Space_Invaders
                 invaderX13 = 2000;
 
                 score += 20;
+
+                activeInvaders.Remove(2);
             }
             else if (playerShot.IntersectsWith(invader14))
             {
@@ -866,6 +923,8 @@ namespace Space_Invaders
                 invaderX14 = 2000;
 
                 score += 10;
+
+                activeInvaders.Remove(3);
             }
             else if (playerShot.IntersectsWith(invader15))
             {
@@ -882,9 +941,11 @@ namespace Space_Invaders
                 invaderX15 = 2000;
 
                 score += 10;
+
+                activeInvaders.Remove(4);
             }
 
-           else if (playerShot.IntersectsWith(invader21))
+            else if (playerShot.IntersectsWith(invader21))
             {
                 killCounter++;
 
@@ -899,6 +960,8 @@ namespace Space_Invaders
                 invaderX21 = 2000;
 
                 score += 40;
+
+                activeInvaders.Remove(5);
             }
             else if (playerShot.IntersectsWith(invader22))
             {
@@ -915,6 +978,8 @@ namespace Space_Invaders
                 invaderX22 = 2000;
 
                 score += 20;
+
+                activeInvaders.Remove(6);
             }
             else if (playerShot.IntersectsWith(invader23))
             {
@@ -931,6 +996,8 @@ namespace Space_Invaders
                 invaderX23 = 2000;
 
                 score += 20;
+
+                activeInvaders.Remove(7);
             }
             else if (playerShot.IntersectsWith(invader24))
             {
@@ -947,6 +1014,8 @@ namespace Space_Invaders
                 invaderX24 = 2000;
 
                 score += 10;
+
+                activeInvaders.Remove(8);
             }
             else if (playerShot.IntersectsWith(invader25))
             {
@@ -963,9 +1032,11 @@ namespace Space_Invaders
                 invaderX25 = 2000;
 
                 score += 10;
+
+                activeInvaders.Remove(10);
             }
 
-           else if (playerShot.IntersectsWith(invader31))
+            else if (playerShot.IntersectsWith(invader31))
             {
                 killCounter++;
 
@@ -980,6 +1051,8 @@ namespace Space_Invaders
                 invaderX31 = 2000;
 
                 score += 40;
+
+                activeInvaders.Remove(11);
             }
             else if (playerShot.IntersectsWith(invader32))
             {
@@ -996,6 +1069,8 @@ namespace Space_Invaders
                 invaderX32 = 2000;
 
                 score += 20;
+
+                activeInvaders.Remove(12);
             }
             else if (playerShot.IntersectsWith(invader33))
             {
@@ -1012,6 +1087,8 @@ namespace Space_Invaders
                 invaderX33 = 2000;
 
                 score += 20;
+
+                activeInvaders.Remove(13);
             }
             else if (playerShot.IntersectsWith(invader34))
             {
@@ -1028,6 +1105,8 @@ namespace Space_Invaders
                 invaderX34 = 2000;
 
                 score += 10;
+
+                activeInvaders.Remove(14);
             }
             else if (playerShot.IntersectsWith(invader35))
             {
@@ -1044,9 +1123,11 @@ namespace Space_Invaders
                 invaderX35 = 2000;
 
                 score += 10;
+
+                activeInvaders.Remove(15);
             }
 
-           else if (playerShot.IntersectsWith(invader41))
+            else if (playerShot.IntersectsWith(invader41))
             {
                 killCounter++;
 
@@ -1061,6 +1142,8 @@ namespace Space_Invaders
                 invaderX41 = 2000;
 
                 score += 40;
+
+                activeInvaders.Remove(16);
             }
             else if (playerShot.IntersectsWith(invader42))
             {
@@ -1077,6 +1160,8 @@ namespace Space_Invaders
                 invaderX42 = 2000;
 
                 score += 20;
+
+                activeInvaders.Remove(17);
             }
             else if (playerShot.IntersectsWith(invader43))
             {
@@ -1093,6 +1178,8 @@ namespace Space_Invaders
                 invaderX43 = 2000;
 
                 score += 20;
+
+                activeInvaders.Remove(18);
             }
             else if (playerShot.IntersectsWith(invader44))
             {
@@ -1109,6 +1196,8 @@ namespace Space_Invaders
                 invaderX44 = 2000;
 
                 score += 10;
+
+                activeInvaders.Remove(19);
             }
             else if (playerShot.IntersectsWith(invader45))
             {
@@ -1125,8 +1214,10 @@ namespace Space_Invaders
                 invaderX45 = 2000;
 
                 score += 10;
+
+                activeInvaders.Remove(20);
             }
-           else if (playerShot.IntersectsWith(invader51))
+            else if (playerShot.IntersectsWith(invader51))
             {
                 killCounter++;
 
@@ -1138,9 +1229,11 @@ namespace Space_Invaders
 
                 invaderY51 = 2000;
 
-                invaderX15 = 2000;
+                invaderX51 = 2000;
 
                 score += 40;
+
+                activeInvaders.Remove(21);
             }
             else if (playerShot.IntersectsWith(invader52))
             {
@@ -1157,6 +1250,8 @@ namespace Space_Invaders
                 invaderX52 = 2000;
 
                 score += 20;
+
+                activeInvaders.Remove(22);
             }
             else if (playerShot.IntersectsWith(invader53))
             {
@@ -1173,6 +1268,8 @@ namespace Space_Invaders
                 invaderX53 = 2000;
 
                 score += 20;
+
+                activeInvaders.Remove(23);
             }
             else if (playerShot.IntersectsWith(invader54))
             {
@@ -1189,6 +1286,8 @@ namespace Space_Invaders
                 invaderX54 = 2000;
 
                 score += 10;
+
+                activeInvaders.Remove(24);
             }
             else if (playerShot.IntersectsWith(invader55))
             {
@@ -1205,6 +1304,8 @@ namespace Space_Invaders
                 invaderX55 = 2000;
 
                 score += 10;
+
+                activeInvaders.Remove(25);
             }
             else if (playerShot.IntersectsWith(invader61))
             {
@@ -1221,6 +1322,8 @@ namespace Space_Invaders
                 invaderX61 = 2000;
 
                 score += 40;
+
+                activeInvaders.Remove(26);
             }
             else if (playerShot.IntersectsWith(invader62))
             {
@@ -1237,6 +1340,8 @@ namespace Space_Invaders
                 invaderX62 = 2000;
 
                 score += 20;
+
+                activeInvaders.Remove(27);
             }
             else if (playerShot.IntersectsWith(invader63))
             {
@@ -1253,6 +1358,8 @@ namespace Space_Invaders
                 invaderX63 = 2000;
 
                 score += 20;
+
+                activeInvaders.Remove(28);
             }
             else if (playerShot.IntersectsWith(invader64))
             {
@@ -1269,6 +1376,8 @@ namespace Space_Invaders
                 invaderX64 = 2000;
 
                 score += 10;
+
+                activeInvaders.Remove(29);
             }
             else if (playerShot.IntersectsWith(invader65))
             {
@@ -1285,6 +1394,8 @@ namespace Space_Invaders
                 invaderX65 = 2000;
 
                 score += 10;
+
+                activeInvaders.Remove(30);
             }
             #endregion
         }
@@ -2513,11 +2624,11 @@ namespace Space_Invaders
         {
             if (newInvaderSpeed == true)
             {
-             //   invaderSpeed++;
+                //   invaderSpeed++;
 
                 newInvaderSpeed = false;
             }
-            
+
         }
 
         public void updateBarriers()
@@ -2526,7 +2637,7 @@ namespace Space_Invaders
             {
                 barrier1Y = 1000;
             }
-           else if (barrier2Hit == 45)
+            else if (barrier2Hit == 45)
             {
                 barrier2Y = 1000;
             }
@@ -2550,13 +2661,192 @@ namespace Space_Invaders
                 if (temp2 == 1)
                 {
                     invaderShotX = invaderX11;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 2)
+                {
+                    invaderShotX = invaderX12;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 3)
+                {
+                    invaderShotX = invaderX13;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 4)
+                {
+                    invaderShotX = invaderX14;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 5)
+                {
+                    invaderShotX = invaderX15;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 6)
+                {
+                    invaderShotX = invaderX21;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 7)
+                {
+                    invaderShotX = invaderX22;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 8)
+                {
+                    invaderShotX = invaderX23;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 9)
+                {
+                    invaderShotX = invaderX24;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 10)
+                {
+                    invaderShotX = invaderX25;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 11)
+                {
+                    invaderShotX = invaderX31;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 12)
+                {
+                    invaderShotX = invaderX32;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 13)
+                {
+                    invaderShotX = invaderX33;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 14)
+                {
+                    invaderShotX = invaderX34;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 15)
+                {
+                    invaderShotX = invaderX35;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 16)
+                {
+                    invaderShotX = invaderX41;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 17)
+                {
+                    invaderShotX = invaderX42;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 18)
+                {
+                    invaderShotX = invaderX43;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 19)
+                {
+                    invaderShotX = invaderX44;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 20)
+                {
+                    invaderShotX = invaderX45;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 21)
+                {
+                    invaderShotX = invaderX51;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 22)
+                {
+                    invaderShotX = invaderX52;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 23)
+                {
+                    invaderShotX = invaderX53;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 24)
+                {
+                    invaderShotX = invaderX54;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 25)
+                {
+                    invaderShotX = invaderX55;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 26)
+                {
+                    invaderShotX = invaderX61;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 27)
+                {
+                    invaderShotX = invaderX62;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 28)
+                {
+                    invaderShotX = invaderX63;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 29)
+                {
+                    invaderShotX = invaderX64;
+
+                    invaderShotFired = true;
+                }
+                else if (temp2 == 30)
+                {
+                    invaderShotX = invaderX65;
+
+                    invaderShotFired = true;
                 }
             }
         }
 
         public void invaderShotMovement()
         {
-            invaderShotY = invaderShotY - invaderShotSpeed;
+            if (invaderShotFired)
+            {
+                invaderShotY = invaderShotY - invaderShotSpeed;
+            }
         }
     }
 }

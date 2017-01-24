@@ -61,102 +61,47 @@ namespace Space_Invaders.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.Drawing.Bitmap _10_50_point_exploding_sprite {
+        internal static System.IO.UnmanagedMemoryStream explosion {
             get {
-                object obj = ResourceManager.GetObject("_10_50_point_exploding_sprite", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetStream("explosion", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.Drawing.Bitmap _10_point_sprite {
+        internal static System.IO.UnmanagedMemoryStream invaderkilled {
             get {
-                object obj = ResourceManager.GetObject("_10_point_sprite", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetStream("invaderkilled", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.Drawing.Bitmap _10_point_sprite_alt {
+        internal static System.IO.UnmanagedMemoryStream shoot {
             get {
-                object obj = ResourceManager.GetObject("_10_point_sprite_alt", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetStream("shoot", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.Drawing.Bitmap _20_point_sprite {
+        internal static System.IO.UnmanagedMemoryStream spaceinvaders1 {
             get {
-                object obj = ResourceManager.GetObject("_20_point_sprite", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetStream("spaceinvaders1", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.Drawing.Bitmap _20_point_sprite_alt {
+        internal static System.IO.UnmanagedMemoryStream ufo_highpitch {
             get {
-                object obj = ResourceManager.GetObject("_20_point_sprite_alt", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap _50_300_random_sprite {
-            get {
-                object obj = ResourceManager.GetObject("_50_300_random_sprite", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap _50_point_sprite {
-            get {
-                object obj = ResourceManager.GetObject("_50_point_sprite", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap _50_point_sprite_alt {
-            get {
-                object obj = ResourceManager.GetObject("_50_point_sprite_alt", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap exploding_player_alt {
-            get {
-                object obj = ResourceManager.GetObject("exploding_player_alt", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap hero {
-            get {
-                object obj = ResourceManager.GetObject("hero", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetStream("ufo_highpitch", resourceCulture);
             }
         }
     }
