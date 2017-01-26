@@ -48,9 +48,9 @@
             this.highScoreButton.Location = new System.Drawing.Point(279, 519);
             this.highScoreButton.Margin = new System.Windows.Forms.Padding(2);
             this.highScoreButton.Name = "highScoreButton";
-            this.highScoreButton.Size = new System.Drawing.Size(203, 37);
+            this.highScoreButton.Size = new System.Drawing.Size(203, 61);
             this.highScoreButton.TabIndex = 3;
-            this.highScoreButton.Text = "HIGH SCORES";
+            this.highScoreButton.Text = "CURRENT SESSION  HIGH SCORES";
             this.highScoreButton.UseVisualStyleBackColor = false;
             this.highScoreButton.Click += new System.EventHandler(this.highScoreButton_Click);
             // 

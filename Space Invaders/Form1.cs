@@ -22,7 +22,6 @@ namespace Space_Invaders
         bool restart = false;
         bool ufoLaunched = false;
         bool newInvaderSpeed = false;
-        bool gameStarted = false;
         bool invaderShotFired = false;
         bool shootSoundplayed = false;
 
@@ -30,11 +29,13 @@ namespace Space_Invaders
         int playerSpeed = 5;
         int xHero;
         int yHero = 600;
-        int heroWidth = 20;
+        int heroWidth = 60;
         int heroHeight = 20;
         int score = 0;
         int killCounter = 0;
         int levelCounter = 0;
+        int lives = 3;
+        int screenTracker = 1;
 
         //Intialize variables for shot
         int playerShotSpeed = 8;
@@ -45,6 +46,8 @@ namespace Space_Invaders
 
         //Intialize variables for invaders
         List<int> activeInvaders = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 });
+
+        List<int> activeInvadersBackup = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 });
 
         int invaderX11 = 200;
         int invaderY11 = 100;
@@ -114,13 +117,14 @@ namespace Space_Invaders
         int invaderShotX = 3000;
         int invaderShotSpeed = 5;
         int nextInvadershot = 0;
+        int shotTime = 120;
 
         //Intialize variables for ufo
         int ufoX = 776;
         int ufoY = 50;
-        int ufoWidth = 20;
+        int ufoWidth = 40;
         int ufoHeight = 20;
-        int ufoSpeed = 3;
+        int ufoSpeed = 2;
         int preUfoScore;
         int ufoScore = 0;
         int ufoDelay = 0;
@@ -137,13 +141,15 @@ namespace Space_Invaders
         int barrier1Hit = 0;
         int barrier2Hit = 0;
         int barrier3Hit = 0;
-
-        int shotTime;
         Random randGen = new Random();
 
         //Intialize list for high scores
         List<int> highScores = new List<int>();
-   
+
+        SoundPlayer shot = new SoundPlayer(Properties.Resources.shoot);
+
+        SoundPlayer themeSong = new SoundPlayer(Properties.Resources.spaceinvaders1);
+
         public Form1()
         {
             InitializeComponent();
@@ -151,25 +157,18 @@ namespace Space_Invaders
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.Size = new Size(766, 706);
-
-            highScores.Add(240);
-            highScores.Add(6310);
-            highScores.Add(5710);
-            highScores.Add(9750);
-            highScores.Add(4540);
-            highScores.Add(50975);
-            highScores.Add(45240);
-            highScores.Add(205);
-            highScores.Add(60);
-            highScores.Add(5870);
-            highScores.Add(6520);
-            highScores.Add(40);
-            highScores.Add(30);
-            highScores.Add(20);
-            highScores.Add(10);
+            highScores.Add(0);
+            highScores.Add(0);
+            highScores.Add(0);
+            highScores.Add(0);
+            highScores.Add(0);
+            highScores.Add(0);
 
             xHero = this.Width / 2;
+
+            themeSong.PlayLooping();
+
+            Refresh();
         }
 
         private void playGameButton_Click(object sender, EventArgs e)
@@ -187,38 +186,22 @@ namespace Space_Invaders
 
             KeyPreview = true;
 
+            this.Focus();
+
             DoubleBuffered = true;
 
             this.BackgroundImage = null;
 
-            gameStarted = true;
+            themeSong.Stop();
+
+            screenTracker = 3;
             Refresh();
         }
 
         private void highScoreButton_Click(object sender, EventArgs e)
         {
-            this.BackgroundImage = null;
-
-            Graphics g = this.CreateGraphics();
-            Font bigFont = new Font("Consolas", 20, FontStyle.Bold); //create a font for graphics
-            Font smallFont = new Font("Consolas", 13, FontStyle.Bold); //create a font for graphics
-            SolidBrush greenBrush = new SolidBrush(Color.LimeGreen); //create a brush for graphics
-            SolidBrush whiteBrush = new SolidBrush(Color.White); //create a brush for graphics
-
-            highScoreButton.Visible = false;
-
-            highScores.Add(score);
-            highScores.Sort();
-            highScores.Reverse();
-
-            int y = 80;
-
-            for (int i = 0; i < 10; i++)
-            {
-                g.DrawString("HIGH SCORES", bigFont, greenBrush, 150, 50);
-                g.DrawString("" + highScores[i], smallFont, whiteBrush, 150, y);
-                y = y + 20;
-            }
+            screenTracker = 2;
+            Refresh();            
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -234,6 +217,7 @@ namespace Space_Invaders
                     break;
                 case Keys.Space:
                     spaceKeyDown = true;
+                    shootSoundplayed = true;
                     break;
             }
             #endregion 
@@ -289,16 +273,49 @@ namespace Space_Invaders
 
             levelTracker();
 
-            speedUpdate();
-
             updateBarriers();
+
+            playSounds();
+
+            invaderShotCollision();
 
             Refresh();
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            if (gameStarted)
+            if (screenTracker == 1)
+            {
+                this.Size = new Size(766, 706);
+            }
+            if (screenTracker == 2)
+            {
+                Graphics g = this.CreateGraphics();
+                Font bigFont = new Font("Consolas", 20, FontStyle.Bold); //create a font for graphics
+                Font smallFont = new Font("Consolas", 13, FontStyle.Bold); //create a font for graphics
+                SolidBrush greenBrush = new SolidBrush(Color.LimeGreen); //create a brush for graphics
+                SolidBrush whiteBrush = new SolidBrush(Color.White); //create a brush for graphics
+
+                this.BackgroundImage = null;
+
+                g.Clear(Color.Black);
+
+                highScoreButton.Visible = false;
+
+                highScores.Add(score);
+                highScores.Sort();
+                highScores.Reverse();
+
+                int y = 80;
+
+                for (int i = 0; i < 5; i++)
+                {
+                    g.DrawString("HIGH SCORES", bigFont, greenBrush, 150, 50);
+                    g.DrawString("" + highScores[i], smallFont, whiteBrush, 150, y);
+                    y = y + 20;
+                }
+            }
+            if (screenTracker == 3)
             {
                 Pen drawPen = new Pen(Color.Green, 2);
                 Font drawFont = new Font("Arial", 16, FontStyle.Bold);
@@ -454,11 +471,9 @@ namespace Space_Invaders
 
                 e.Graphics.FillRectangle(Brushes.Red, ufo);
 
-                e.Graphics.DrawString(score + "", drawFont, drawBrush, 400, 40);
+                e.Graphics.DrawString(score + "", drawFont, drawBrush, this.Width - 100, 50);
 
-                e.Graphics.DrawString(killCounter + "", drawFont, drawBrush, 300, 40);
-
-                e.Graphics.DrawString(levelCounter + "", drawFont, drawBrush, 200, 40);
+                e.Graphics.DrawString(lives + "", drawFont, drawBrush, 100, 50);
             }
         }
 
@@ -495,9 +510,19 @@ namespace Space_Invaders
             {
                 shotLaunched = true;
 
-                xShot = xHero + 5;
+                xShot = xHero + heroWidth/2;
                 yShot = yHero;
 
+            }
+        }
+
+        public void playSounds()
+        {
+            if (shootSoundplayed)
+            {
+                shot.Play();
+
+                shootSoundplayed = false;
             }
         }
 
@@ -512,14 +537,7 @@ namespace Space_Invaders
                 yShot = yShot - playerShotSpeed;
             }
 
-            if (shootSoundplayed)
-            {
-                shootSoundplayed = false;
-
-                shoot.Play();
-            }
-
-            if (yShot == 0)
+            if (yShot <= 100)
             {
                 yShot = 1000;
 
@@ -1404,24 +1422,25 @@ namespace Space_Invaders
         {
             if (killCounter == 10 && newLevel == false)
             {
-                newInvaderSpeed = true;
+                shotTime = 100;
             }
 
-            else if (killCounter == 15 && newLevel == false)
+           else if (killCounter == 15 && newLevel == false)
             {
-                newInvaderSpeed = true;
-            }
-            else if (killCounter == 20 && newLevel == false)
-            {
-                newInvaderSpeed = true;
+
+                invaderShotSpeed = 7;
             }
 
-            else if (killCounter == 25 && newLevel == false)
+           else if (killCounter == 20 && newLevel == false)
             {
-                newInvaderSpeed = true;
+                shotTime = 80;
             }
 
-            else if (killCounter == 30 && newLevel == false)
+           else if (killCounter == 25 && newLevel == false)
+            {
+                invaderShotSpeed = 9;
+            }
+           else if (killCounter == 30 && newLevel == false)
             {
                 levelCounter++;
 
@@ -1534,6 +1553,8 @@ namespace Space_Invaders
 
                 ufoLaunched = false;
 
+                newLevel = false;
+
                 killCounter = 0;
 
                 score += 1000;
@@ -1543,8 +1564,15 @@ namespace Space_Invaders
                 ufoX = 776;
 
                 ufoDelay = 0;
-            }
 
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
+
+                lives++;
+
+                activeInvaders.AddRange(activeInvadersBackup);
+            }
             else if (levelCounter == 2 && restart == true)
             {
                 invaderX11 = 200;
@@ -1645,6 +1673,8 @@ namespace Space_Invaders
 
                 ufoLaunched = false;
 
+                newLevel = false;
+
                 killCounter = 0;
 
                 score += 1000;
@@ -1654,6 +1684,12 @@ namespace Space_Invaders
                 ufoX = 776;
 
                 ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
             }
             else if (levelCounter == 3 && restart == true)
             {
@@ -1755,6 +1791,8 @@ namespace Space_Invaders
 
                 ufoLaunched = false;
 
+                newLevel = false;
+
                 killCounter = 0;
 
                 score += 1000;
@@ -1764,6 +1802,12 @@ namespace Space_Invaders
                 ufoX = 776;
 
                 ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
             }
             else if (levelCounter == 4 && restart == true)
             {
@@ -1865,6 +1909,8 @@ namespace Space_Invaders
 
                 ufoLaunched = false;
 
+                newLevel = false;
+
                 killCounter = 0;
 
                 score += 1000;
@@ -1874,6 +1920,12 @@ namespace Space_Invaders
                 ufoX = 776;
 
                 ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
             }
 
             else if (levelCounter == 5 && restart == true)
@@ -1976,6 +2028,8 @@ namespace Space_Invaders
 
                 ufoLaunched = false;
 
+                newLevel = false;
+
                 killCounter = 0;
 
                 score += 1000;
@@ -1985,6 +2039,12 @@ namespace Space_Invaders
                 ufoX = 776;
 
                 ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
             }
 
             else if (levelCounter == 6 && restart == true)
@@ -2087,6 +2147,8 @@ namespace Space_Invaders
 
                 ufoLaunched = false;
 
+                newLevel = false;
+
                 killCounter = 0;
 
                 score += 1000;
@@ -2096,6 +2158,12 @@ namespace Space_Invaders
                 ufoX = 776;
 
                 ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
             }
 
             else if (levelCounter == 7 && restart == true)
@@ -2198,6 +2266,8 @@ namespace Space_Invaders
 
                 ufoLaunched = false;
 
+                newLevel = false;
+
                 killCounter = 0;
 
                 score += 1000;
@@ -2207,6 +2277,12 @@ namespace Space_Invaders
                 ufoX = 776;
 
                 ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
             }
 
             else if (levelCounter == 8 && restart == true)
@@ -2309,6 +2385,8 @@ namespace Space_Invaders
 
                 ufoLaunched = false;
 
+                newLevel = false;
+
                 killCounter = 0;
 
                 score += 1000;
@@ -2318,6 +2396,13 @@ namespace Space_Invaders
                 ufoX = 776;
 
                 ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
+
             }
             else if (levelCounter == 9 && restart == true)
             {
@@ -2419,6 +2504,8 @@ namespace Space_Invaders
 
                 ufoLaunched = false;
 
+                newLevel = false;
+
                 killCounter = 0;
 
                 score += 1000;
@@ -2428,6 +2515,12 @@ namespace Space_Invaders
                 ufoX = 776;
 
                 ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
             }
             else if (levelCounter == 10 && restart == true)
             {
@@ -2529,6 +2622,8 @@ namespace Space_Invaders
 
                 ufoLaunched = false;
 
+                newLevel = false;
+
                 killCounter = 0;
 
                 score += 1000;
@@ -2538,6 +2633,512 @@ namespace Space_Invaders
                 ufoX = 776;
 
                 ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
+            }
+            else if (levelCounter == 11 && restart == true)
+            {
+                invaderX11 = 200;
+                invaderY11 = 100 + levelCounter * invaderDecrease;
+
+                invaderX12 = 200;
+                invaderY12 = 140 + levelCounter * invaderDecrease;
+
+                invaderX13 = 200;
+                invaderY13 = 180 + levelCounter * invaderDecrease;
+
+                invaderX14 = 200;
+                invaderY14 = 220 + levelCounter * invaderDecrease;
+
+                invaderX15 = 200;
+                invaderY15 = 260 + levelCounter * invaderDecrease;
+
+                invaderX21 = 250;
+                invaderY21 = 100 + levelCounter * invaderDecrease;
+
+                invaderX22 = 250;
+                invaderY22 = 140 + levelCounter * invaderDecrease;
+
+                invaderX23 = 250;
+                invaderY23 = 180 + levelCounter * invaderDecrease;
+
+                invaderX24 = 250;
+                invaderY24 = 220 + levelCounter * invaderDecrease;
+
+                invaderX25 = 250;
+                invaderY25 = 260 + levelCounter * invaderDecrease;
+
+                invaderX31 = 300;
+                invaderY31 = 100 + levelCounter * invaderDecrease;
+
+                invaderX32 = 300;
+                invaderY32 = 140 + levelCounter * invaderDecrease;
+
+                invaderX33 = 300;
+                invaderY33 = 180 + levelCounter * invaderDecrease;
+
+                invaderX34 = 300;
+                invaderY34 = 220 + levelCounter * invaderDecrease;
+
+                invaderX35 = 300;
+                invaderY35 = 260 + levelCounter * invaderDecrease;
+
+                invaderX41 = 350;
+                invaderY41 = 100 + levelCounter * invaderDecrease;
+
+                invaderX42 = 350;
+                invaderY42 = 140 + levelCounter * invaderDecrease;
+
+                invaderX43 = 350;
+                invaderY43 = 180 + levelCounter * invaderDecrease;
+
+                invaderX44 = 350;
+                invaderY44 = 220 + levelCounter * invaderDecrease;
+
+                invaderX45 = 350;
+                invaderY45 = 260 + levelCounter * invaderDecrease;
+
+                invaderX51 = 400;
+                invaderY51 = 100 + levelCounter * invaderDecrease;
+
+                invaderX52 = 400;
+                invaderY52 = 140 + levelCounter * invaderDecrease;
+
+                invaderX53 = 400;
+                invaderY53 = 180 + levelCounter * invaderDecrease;
+
+                invaderX54 = 400;
+                invaderY54 = 220 + levelCounter * invaderDecrease;
+
+                invaderX55 = 400;
+                invaderY55 = 260 + levelCounter * invaderDecrease;
+
+                invaderX61 = 450;
+                invaderY61 = 100 + levelCounter * invaderDecrease;
+
+                invaderX62 = 450;
+                invaderY62 = 140 + levelCounter * invaderDecrease;
+
+                invaderX63 = 450;
+                invaderY63 = 180 + levelCounter * invaderDecrease;
+
+                invaderX64 = 450;
+                invaderY64 = 220 + levelCounter * invaderDecrease;
+
+                invaderX65 = 450;
+                invaderY65 = 260 + levelCounter * invaderDecrease;
+
+                invadersLeft = false;
+
+                invadersRight = true;
+
+                restart = false;
+
+                ufoLaunched = false;
+
+                newLevel = false;
+
+                killCounter = 0;
+
+                score += 1000;
+
+                invaderSpeed = 1;
+
+                ufoX = 776;
+
+                ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
+            }
+            else if (levelCounter == 12 && restart == true)
+            {
+                invaderX11 = 200;
+                invaderY11 = 100 + levelCounter * invaderDecrease;
+
+                invaderX12 = 200;
+                invaderY12 = 140 + levelCounter * invaderDecrease;
+
+                invaderX13 = 200;
+                invaderY13 = 180 + levelCounter * invaderDecrease;
+
+                invaderX14 = 200;
+                invaderY14 = 220 + levelCounter * invaderDecrease;
+
+                invaderX15 = 200;
+                invaderY15 = 260 + levelCounter * invaderDecrease;
+
+                invaderX21 = 250;
+                invaderY21 = 100 + levelCounter * invaderDecrease;
+
+                invaderX22 = 250;
+                invaderY22 = 140 + levelCounter * invaderDecrease;
+
+                invaderX23 = 250;
+                invaderY23 = 180 + levelCounter * invaderDecrease;
+
+                invaderX24 = 250;
+                invaderY24 = 220 + levelCounter * invaderDecrease;
+
+                invaderX25 = 250;
+                invaderY25 = 260 + levelCounter * invaderDecrease;
+
+                invaderX31 = 300;
+                invaderY31 = 100 + levelCounter * invaderDecrease;
+
+                invaderX32 = 300;
+                invaderY32 = 140 + levelCounter * invaderDecrease;
+
+                invaderX33 = 300;
+                invaderY33 = 180 + levelCounter * invaderDecrease;
+
+                invaderX34 = 300;
+                invaderY34 = 220 + levelCounter * invaderDecrease;
+
+                invaderX35 = 300;
+                invaderY35 = 260 + levelCounter * invaderDecrease;
+
+                invaderX41 = 350;
+                invaderY41 = 100 + levelCounter * invaderDecrease;
+
+                invaderX42 = 350;
+                invaderY42 = 140 + levelCounter * invaderDecrease;
+
+                invaderX43 = 350;
+                invaderY43 = 180 + levelCounter * invaderDecrease;
+
+                invaderX44 = 350;
+                invaderY44 = 220 + levelCounter * invaderDecrease;
+
+                invaderX45 = 350;
+                invaderY45 = 260 + levelCounter * invaderDecrease;
+
+                invaderX51 = 400;
+                invaderY51 = 100 + levelCounter * invaderDecrease;
+
+                invaderX52 = 400;
+                invaderY52 = 140 + levelCounter * invaderDecrease;
+
+                invaderX53 = 400;
+                invaderY53 = 180 + levelCounter * invaderDecrease;
+
+                invaderX54 = 400;
+                invaderY54 = 220 + levelCounter * invaderDecrease;
+
+                invaderX55 = 400;
+                invaderY55 = 260 + levelCounter * invaderDecrease;
+
+                invaderX61 = 450;
+                invaderY61 = 100 + levelCounter * invaderDecrease;
+
+                invaderX62 = 450;
+                invaderY62 = 140 + levelCounter * invaderDecrease;
+
+                invaderX63 = 450;
+                invaderY63 = 180 + levelCounter * invaderDecrease;
+
+                invaderX64 = 450;
+                invaderY64 = 220 + levelCounter * invaderDecrease;
+
+                invaderX65 = 450;
+                invaderY65 = 260 + levelCounter * invaderDecrease;
+
+                invadersLeft = false;
+
+                invadersRight = true;
+
+                restart = false;
+
+                ufoLaunched = false;
+
+                newLevel = false;
+
+                killCounter = 0;
+
+                score += 1000;
+
+                invaderSpeed = 1;
+
+                ufoX = 776;
+
+                ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
+            }
+            else if (levelCounter == 13 && restart == true)
+            {
+                invaderX11 = 200;
+                invaderY11 = 100 + levelCounter * invaderDecrease;
+
+                invaderX12 = 200;
+                invaderY12 = 140 + levelCounter * invaderDecrease;
+
+                invaderX13 = 200;
+                invaderY13 = 180 + levelCounter * invaderDecrease;
+
+                invaderX14 = 200;
+                invaderY14 = 220 + levelCounter * invaderDecrease;
+
+                invaderX15 = 200;
+                invaderY15 = 260 + levelCounter * invaderDecrease;
+
+                invaderX21 = 250;
+                invaderY21 = 100 + levelCounter * invaderDecrease;
+
+                invaderX22 = 250;
+                invaderY22 = 140 + levelCounter * invaderDecrease;
+
+                invaderX23 = 250;
+                invaderY23 = 180 + levelCounter * invaderDecrease;
+
+                invaderX24 = 250;
+                invaderY24 = 220 + levelCounter * invaderDecrease;
+
+                invaderX25 = 250;
+                invaderY25 = 260 + levelCounter * invaderDecrease;
+
+                invaderX31 = 300;
+                invaderY31 = 100 + levelCounter * invaderDecrease;
+
+                invaderX32 = 300;
+                invaderY32 = 140 + levelCounter * invaderDecrease;
+
+                invaderX33 = 300;
+                invaderY33 = 180 + levelCounter * invaderDecrease;
+
+                invaderX34 = 300;
+                invaderY34 = 220 + levelCounter * invaderDecrease;
+
+                invaderX35 = 300;
+                invaderY35 = 260 + levelCounter * invaderDecrease;
+
+                invaderX41 = 350;
+                invaderY41 = 100 + levelCounter * invaderDecrease;
+
+                invaderX42 = 350;
+                invaderY42 = 140 + levelCounter * invaderDecrease;
+
+                invaderX43 = 350;
+                invaderY43 = 180 + levelCounter * invaderDecrease;
+
+                invaderX44 = 350;
+                invaderY44 = 220 + levelCounter * invaderDecrease;
+
+                invaderX45 = 350;
+                invaderY45 = 260 + levelCounter * invaderDecrease;
+
+                invaderX51 = 400;
+                invaderY51 = 100 + levelCounter * invaderDecrease;
+
+                invaderX52 = 400;
+                invaderY52 = 140 + levelCounter * invaderDecrease;
+
+                invaderX53 = 400;
+                invaderY53 = 180 + levelCounter * invaderDecrease;
+
+                invaderX54 = 400;
+                invaderY54 = 220 + levelCounter * invaderDecrease;
+
+                invaderX55 = 400;
+                invaderY55 = 260 + levelCounter * invaderDecrease;
+
+                invaderX61 = 450;
+                invaderY61 = 100 + levelCounter * invaderDecrease;
+
+                invaderX62 = 450;
+                invaderY62 = 140 + levelCounter * invaderDecrease;
+
+                invaderX63 = 450;
+                invaderY63 = 180 + levelCounter * invaderDecrease;
+
+                invaderX64 = 450;
+                invaderY64 = 220 + levelCounter * invaderDecrease;
+
+                invaderX65 = 450;
+                invaderY65 = 260 + levelCounter * invaderDecrease;
+
+                invadersLeft = false;
+
+                invadersRight = true;
+
+                restart = false;
+
+                ufoLaunched = false;
+
+                newLevel = false;
+
+                killCounter = 0;
+
+                score += 1000;
+
+                invaderSpeed = 1;
+
+                ufoX = 776;
+
+                ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
+            }
+            else if (levelCounter == 14 && restart == true)
+            {
+                invaderX11 = 200;
+                invaderY11 = 100 + levelCounter * invaderDecrease;
+
+                invaderX12 = 200;
+                invaderY12 = 140 + levelCounter * invaderDecrease;
+
+                invaderX13 = 200;
+                invaderY13 = 180 + levelCounter * invaderDecrease;
+
+                invaderX14 = 200;
+                invaderY14 = 220 + levelCounter * invaderDecrease;
+
+                invaderX15 = 200;
+                invaderY15 = 260 + levelCounter * invaderDecrease;
+
+                invaderX21 = 250;
+                invaderY21 = 100 + levelCounter * invaderDecrease;
+
+                invaderX22 = 250;
+                invaderY22 = 140 + levelCounter * invaderDecrease;
+
+                invaderX23 = 250;
+                invaderY23 = 180 + levelCounter * invaderDecrease;
+
+                invaderX24 = 250;
+                invaderY24 = 220 + levelCounter * invaderDecrease;
+
+                invaderX25 = 250;
+                invaderY25 = 260 + levelCounter * invaderDecrease;
+
+                invaderX31 = 300;
+                invaderY31 = 100 + levelCounter * invaderDecrease;
+
+                invaderX32 = 300;
+                invaderY32 = 140 + levelCounter * invaderDecrease;
+
+                invaderX33 = 300;
+                invaderY33 = 180 + levelCounter * invaderDecrease;
+
+                invaderX34 = 300;
+                invaderY34 = 220 + levelCounter * invaderDecrease;
+
+                invaderX35 = 300;
+                invaderY35 = 260 + levelCounter * invaderDecrease;
+
+                invaderX41 = 350;
+                invaderY41 = 100 + levelCounter * invaderDecrease;
+
+                invaderX42 = 350;
+                invaderY42 = 140 + levelCounter * invaderDecrease;
+
+                invaderX43 = 350;
+                invaderY43 = 180 + levelCounter * invaderDecrease;
+
+                invaderX44 = 350;
+                invaderY44 = 220 + levelCounter * invaderDecrease;
+
+                invaderX45 = 350;
+                invaderY45 = 260 + levelCounter * invaderDecrease;
+
+                invaderX51 = 400;
+                invaderY51 = 100 + levelCounter * invaderDecrease;
+
+                invaderX52 = 400;
+                invaderY52 = 140 + levelCounter * invaderDecrease;
+
+                invaderX53 = 400;
+                invaderY53 = 180 + levelCounter * invaderDecrease;
+
+                invaderX54 = 400;
+                invaderY54 = 220 + levelCounter * invaderDecrease;
+
+                invaderX55 = 400;
+                invaderY55 = 260 + levelCounter * invaderDecrease;
+
+                invaderX61 = 450;
+                invaderY61 = 100 + levelCounter * invaderDecrease;
+
+                invaderX62 = 450;
+                invaderY62 = 140 + levelCounter * invaderDecrease;
+
+                invaderX63 = 450;
+                invaderY63 = 180 + levelCounter * invaderDecrease;
+
+                invaderX64 = 450;
+                invaderY64 = 220 + levelCounter * invaderDecrease;
+
+                invaderX65 = 450;
+                invaderY65 = 260 + levelCounter * invaderDecrease;
+
+                invadersLeft = false;
+
+                invadersRight = true;
+
+                restart = false;
+
+                ufoLaunched = false;
+
+                newLevel = false;
+
+                killCounter = 0;
+
+                score += 1000;
+
+                invaderSpeed = 1;
+
+                ufoX = 776;
+
+                ufoDelay = 0;
+
+                lives++;
+
+                shotTime = 120;
+
+                invaderShotSpeed = 5;
+            }
+            else if (levelCounter == 15 && restart == true)
+            {
+                invadersLeft = false;
+
+                invadersRight = true;
+
+                restart = false;
+
+                ufoLaunched = false;
+
+                killCounter = 0;
+
+                score += 1000;
+
+                invaderSpeed = 1;
+
+                ufoX = 776;
+
+                ufoDelay = 0;
+
+                lives = 3;
+
+                levelCounter = 0;
+
+                restart = false;
+
+                screenTracker = 1;
             }
         }
 
@@ -2620,17 +3221,6 @@ namespace Space_Invaders
             }
         }
 
-        public void speedUpdate()
-        {
-            if (newInvaderSpeed == true)
-            {
-                //   invaderSpeed++;
-
-                newInvaderSpeed = false;
-            }
-
-        }
-
         public void updateBarriers()
         {
             if (barrier1Hit == 45)
@@ -2651,7 +3241,7 @@ namespace Space_Invaders
         {
             nextInvadershot++;
 
-            if (nextInvadershot == 120)
+            if (nextInvadershot == shotTime)
             {
                 nextInvadershot = 0;
 
@@ -2662,11 +3252,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX11;
 
+                    invaderShotY = invaderY11;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 2)
                 {
                     invaderShotX = invaderX12;
+
+                    invaderShotY = invaderY12;
 
                     invaderShotFired = true;
                 }
@@ -2674,11 +3268,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX13;
 
+                    invaderShotY = invaderY13;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 4)
                 {
                     invaderShotX = invaderX14;
+
+                    invaderShotY = invaderY14;
 
                     invaderShotFired = true;
                 }
@@ -2686,11 +3284,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX15;
 
+                    invaderShotY = invaderY15;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 6)
                 {
                     invaderShotX = invaderX21;
+
+                    invaderShotY = invaderY21;
 
                     invaderShotFired = true;
                 }
@@ -2698,11 +3300,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX22;
 
+                    invaderShotY = invaderY22;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 8)
                 {
                     invaderShotX = invaderX23;
+
+                    invaderShotY = invaderY23;
 
                     invaderShotFired = true;
                 }
@@ -2710,11 +3316,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX24;
 
+                    invaderShotY = invaderY24;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 10)
                 {
                     invaderShotX = invaderX25;
+
+                    invaderShotY = invaderY25;
 
                     invaderShotFired = true;
                 }
@@ -2722,11 +3332,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX31;
 
+                    invaderShotY = invaderY31;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 12)
                 {
                     invaderShotX = invaderX32;
+
+                    invaderShotY = invaderY32;
 
                     invaderShotFired = true;
                 }
@@ -2734,11 +3348,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX33;
 
+                    invaderShotY = invaderY33;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 14)
                 {
                     invaderShotX = invaderX34;
+
+                    invaderShotY = invaderY34;
 
                     invaderShotFired = true;
                 }
@@ -2746,11 +3364,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX35;
 
+                    invaderShotY = invaderY35;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 16)
                 {
                     invaderShotX = invaderX41;
+
+                    invaderShotY = invaderY41;
 
                     invaderShotFired = true;
                 }
@@ -2758,11 +3380,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX42;
 
+                    invaderShotY = invaderY42;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 18)
                 {
                     invaderShotX = invaderX43;
+
+                    invaderShotY = invaderY43;
 
                     invaderShotFired = true;
                 }
@@ -2770,11 +3396,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX44;
 
+                    invaderShotY = invaderY44;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 20)
                 {
                     invaderShotX = invaderX45;
+
+                    invaderShotY = invaderY45;
 
                     invaderShotFired = true;
                 }
@@ -2782,11 +3412,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX51;
 
+                    invaderShotY = invaderY51;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 22)
                 {
                     invaderShotX = invaderX52;
+
+                    invaderShotY = invaderY52;
 
                     invaderShotFired = true;
                 }
@@ -2794,11 +3428,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX53;
 
+                    invaderShotY = invaderY53;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 24)
                 {
                     invaderShotX = invaderX54;
+
+                    invaderShotY = invaderY54;
 
                     invaderShotFired = true;
                 }
@@ -2806,11 +3444,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX55;
 
+                    invaderShotY = invaderY55;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 26)
                 {
                     invaderShotX = invaderX61;
+
+                    invaderShotY = invaderY61;
 
                     invaderShotFired = true;
                 }
@@ -2818,11 +3460,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX62;
 
+                    invaderShotY = invaderY62;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 28)
                 {
                     invaderShotX = invaderX63;
+
+                    invaderShotY = invaderY63;
 
                     invaderShotFired = true;
                 }
@@ -2830,11 +3476,15 @@ namespace Space_Invaders
                 {
                     invaderShotX = invaderX64;
 
+                    invaderShotY = invaderY64;
+
                     invaderShotFired = true;
                 }
                 else if (temp2 == 30)
                 {
                     invaderShotX = invaderX65;
+
+                    invaderShotY = invaderY65;
 
                     invaderShotFired = true;
                 }
@@ -2845,7 +3495,60 @@ namespace Space_Invaders
         {
             if (invaderShotFired)
             {
-                invaderShotY = invaderShotY - invaderShotSpeed;
+                invaderShotY = invaderShotY + invaderShotSpeed;
+            }
+        }
+
+        public void invaderShotCollision()
+        {
+            Rectangle invaderShot = new Rectangle(invaderShotX, invaderShotY, shotWidth, shotHeight);
+
+            Rectangle barrier1 = new Rectangle(barrier1X, barrier1Y, barrierWidth, barrierHeight);
+
+            Rectangle barrier2 = new Rectangle(barrier2X, barrier2Y, barrierWidth, barrierHeight);
+
+            Rectangle barrier3 = new Rectangle(barrier3X, barrier3Y, barrierWidth, barrierHeight);
+
+            Rectangle defender = new Rectangle(xHero, yHero, heroWidth, heroHeight);
+
+            if (invaderShot.IntersectsWith(barrier1))
+            {
+                barrier1Hit++;
+
+                invaderShotFired = false;
+
+                invaderShotY = 1000;
+            }
+
+            else if (invaderShot.IntersectsWith(barrier2))
+            {
+                invaderShotFired = false;
+
+                invaderShotY = 1000;
+
+                barrier2Hit++;
+            }
+            else if (invaderShot.IntersectsWith(barrier3))
+            {
+                invaderShotFired = false;
+
+                invaderShotY = 1000;
+
+                barrier3Hit++;
+            }
+            else if (invaderShot.IntersectsWith(defender))
+            {
+                invaderShotFired = false;
+
+                invaderShotY = 1000;
+
+                lives--;
+            }
+            else if (invaderShotY == this.Height - 50)
+            {
+                invaderShotFired = false;
+
+                invaderShotY = 1000;
             }
         }
     }
