@@ -63,33 +63,6 @@ namespace Space_Invaders.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream explosion {
-            get {
-                return ResourceManager.GetStream("explosion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream invaderkilled {
-            get {
-                return ResourceManager.GetStream("invaderkilled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream shoot {
-            get {
-                return ResourceManager.GetStream("shoot", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
         internal static System.IO.UnmanagedMemoryStream spaceinvaders1 {
             get {
                 return ResourceManager.GetStream("spaceinvaders1", resourceCulture);
@@ -97,11 +70,12 @@ namespace Space_Invaders.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream ufo_highpitch {
+        internal static System.Drawing.Bitmap tittle_screen {
             get {
-                return ResourceManager.GetStream("ufo_highpitch", resourceCulture);
+                object obj = ResourceManager.GetObject("tittle_screen", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

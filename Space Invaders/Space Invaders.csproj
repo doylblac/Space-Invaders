@@ -81,52 +81,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\10 point sprite alt.PNG" />
+    <None Include="Resources\spaceinvaders1.wav" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Image1.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\10 point sprite.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\10-50 point exploding sprite.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\20 point sprite alt.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\20 point sprite.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\50 point sprite alt.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\50 point sprite.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\50-300 random sprite.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\exploding player alt.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\hero.PNG" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\explosion.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\invaderkilled.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ufo_highpitch.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\shoot.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\spaceinvaders1.wav" />
+    <None Include="Resources\tittle_screen.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
